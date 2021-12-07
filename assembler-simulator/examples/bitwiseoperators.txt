@@ -1,0 +1,14 @@
+LIL 0xF
+LIH 0xF
+MBA
+
+LIL 0x1
+LIH 0xF
+
+AND
+OR
+XOR
+NOT
+HLT
+SHR
+SHL
