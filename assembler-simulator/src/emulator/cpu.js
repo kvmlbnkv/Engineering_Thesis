@@ -216,7 +216,15 @@ app.service('cpu', ['opcodes', 'memory', function(opcodes, memory) {
                         self.pc++;
                         break;
                     case opcodes.MMA:
-                        setGPR_SP(checkGPR_SP(3), getGPR_SP(0));
+                        if (self.gpr[4] === 0) {
+                            setGPR_SP(checkGPR_SP(3), getGPR_SP(3) - (getGPR_SP(3) & 0xFF) + getGPR_SP(0));
+                        }
+                        else if (self.gpr[4] === 1) {
+                            setGPR_SP(checkGPR_SP(3), getGPR_SP(3) - (getGPR_SP(3) & 0xFF00) + (getGPR_SP(0) << 8));
+                        }
+                        else {
+                            throw "Invalid usage of MMA: " + pc;
+                        }
                         self.pc++;
                         break;
                     case opcodes.MAP:
@@ -233,9 +241,11 @@ app.service('cpu', ['opcodes', 'memory', function(opcodes, memory) {
                         self.pc++;
                         break;
                     case opcodes.IXR:
+                        setGPR_SP(checkGPR_SP(4), 0);
                         self.pc++;
                         break;
                     case opcodes.IXN:
+                        setGPR_SP(checkGPR_SP(4), getGPR_SP(4) + 1);
                         self.pc++;
                         break;
                     case opcodes.LIL_0:
@@ -243,63 +253,63 @@ app.service('cpu', ['opcodes', 'memory', function(opcodes, memory) {
                         self.pc++;
                         break;
                     case opcodes.LIL_1:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+1));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+1);
                         self.pc++;
                         break;
                     case opcodes.LIL_2:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+2));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+2);
                         self.pc++;
                         break;
                     case opcodes.LIL_3:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+3));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+3);
                         self.pc++;
                         break;
                     case opcodes.LIL_4:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+4));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+4);
                         self.pc++;
                         break;
                     case opcodes.LIL_5:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+5));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+5);
                         self.pc++;
                         break;
                     case opcodes.LIL_6:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+6));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+6);
                         self.pc++;
                         break;
                     case opcodes.LIL_7:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+7));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+7);
                         self.pc++;
                         break;
                     case opcodes.LIL_8:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+8));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+8);
                         self.pc++;
                         break;
                     case opcodes.LIL_9:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+9));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+9);
                         self.pc++;
                         break;
                     case opcodes.LIL_A:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+10));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+10);
                         self.pc++;
                         break;
                     case opcodes.LIL_B:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+11));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+11);
                         self.pc++;
                         break;
                     case opcodes.LIL_C:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+12));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+12);
                         self.pc++;
                         break;
                     case opcodes.LIL_D:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+13));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+13);
                         self.pc++;
                         break;
                     case opcodes.LIL_E:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+14));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+14);
                         self.pc++;
                         break;
                     case opcodes.LIL_F:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+15));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+15);
                         self.pc++;
                         break;
                     case opcodes.LIH_0:
@@ -307,63 +317,63 @@ app.service('cpu', ['opcodes', 'memory', function(opcodes, memory) {
                         self.pc++;
                         break;
                     case opcodes.LIH_1:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(1<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(1<<4));
                         self.pc++;
                         break;
                     case opcodes.LIH_2:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(2<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(2<<4));
                         self.pc++;
                         break;
                     case opcodes.LIH_3:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(3<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(3<<4));
                         self.pc++;
                         break;
                     case opcodes.LIH_4:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(4<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(4<<4));
                         self.pc++;
                         break;
                     case opcodes.LIH_5:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(5<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(5<<4));
                         self.pc++;
                         break;
                     case opcodes.LIH_6:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(6<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(6<<4));
                         self.pc++;
                         break;
                     case opcodes.LIH_7:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(7<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(7<<4));
                         self.pc++;
                         break;
                     case opcodes.LIH_8:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(8<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(8<<4));
                         self.pc++;
                         break;
                     case opcodes.LIH_9:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(9<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(9<<4));
                         self.pc++;
                         break;
                     case opcodes.LIH_A:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(10<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(10<<4));
                         self.pc++;
                         break;
                     case opcodes.LIH_B:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(11<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(11<<4));
                         self.pc++;
                         break;
                     case opcodes.LIH_C:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(12<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(12<<4));
                         self.pc++;
                         break;
                     case opcodes.LIH_D:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(13<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(13<<4));
                         self.pc++;
                         break;
                     case opcodes.LIH_E:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(14<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(14<<4));
                         self.pc++;
                         break;
                     case opcodes.LIH_F:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(15<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(15<<4));
                         self.pc++;
                         break;
                     default:
@@ -381,7 +391,7 @@ app.service('cpu', ['opcodes', 'memory', function(opcodes, memory) {
             self.maxSP = 231;
             self.minSP = 0;
 
-            self.gpr = [0, 0, 0, 0];
+            self.gpr = [0, 0, 0, 0, 0];
             self.sp = self.maxSP;
             self.pc = 0;
             self.zero = false;

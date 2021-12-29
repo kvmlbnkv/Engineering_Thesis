@@ -1,0 +1,2417 @@
+GOTO start
+
+.a:
+DB 0x63
+.a1:
+DB 0x7f
+.a2:
+DB 0xff
+.a3:
+DB 0xff
+
+.b:
+DB 0x5b
+.b1:
+DB 0x7f
+.b2:
+DB 0xff
+.b3:
+DB 0xff
+
+.c:
+DB 0
+.c1:
+DB 0
+.c2:
+DB 0
+.c3:
+DB 0
+
+.asgn:
+DB 0
+.aexp:
+DB 0
+.aman:
+DB 0
+.aman1:
+DB 0
+.aman2:
+DB 0
+
+.bsgn:
+DB 0
+.bexp:
+DB 0
+.bman:
+DB 0
+.bman1:
+DB 0
+.bman2:
+DB 0
+
+.csgn:
+DB 0
+.cexp:
+DB 0
+.cman:
+DB 0
+.cman1:
+DB 0
+.cman2:
+DB 0
+
+.mulaman_3:
+DB 0
+.mulaman_2:
+DB 0
+.mulaman_1:
+DB 0
+
+.mulman:
+DB 0
+.mulman1:
+DB 0
+.mulman2:
+DB 0
+.mulman3:
+DB 0
+.mulman4:
+DB 0
+.mulman5:
+DB 0
+
+.compare_diff:
+DB 0
+
+.compare_b:
+DB 0
+
+.exp_diff:
+DB 0
+
+.shift_carry:
+DB 0
+
+.mul_exp_check:
+DB 0
+
+start:
+multiplication:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIX extraction
+MMA
+JMP
+
+extraction:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIL 0x0
+LIH 0x8
+MBA
+LIX .a
+MMA
+LDA
+AND
+
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIX asgn1
+MMA
+JNE
+
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIX .asgn
+MMA
+LIL 0x0
+LIH 0x0
+STA
+
+rasgn1:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIX .b
+MMA
+LDA
+AND
+
+IXN
+LIL 0x1
+LIH 0x0
+MMA
+IXR
+LIX bsgn1
+MMA
+JNE
+
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIX .bsgn
+MMA
+LIL 0x0
+LIH 0x0
+STA
+
+rbsgn1:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIX .a1
+MMA
+LDA
+SHL
+LIL 0x0
+LIH 0x0
+MBA
+ADL
+ADH
+MAC
+MBA
+LIX .a
+MMA
+LDA
+SHL
+MAC
+CLC
+OR
+LIX .aexp
+MMA
+MAC
+STA
+
+LIX .b1
+MMA
+LDA
+SHL
+LIL 0x0
+LIH 0x0
+MBA
+ADL
+ADH
+MAC
+MBA
+LIX .b
+MMA
+LDA
+SHL
+MAC
+CLC
+OR
+LIX .bexp
+MMA
+MAC
+STA
+
+LIL 0x0
+LIH 0x8
+MBA
+LIX .a1
+MMA
+LDA
+OR
+LIX .aman
+MMA
+MAC
+STA
+LIL 0x0
+LIH 0x0
+MBA
+LIX .a2
+MMA
+LDA
+OR
+LIX .aman1
+MMA
+MAC
+STA
+LIX .a3
+MMA
+LDA
+OR
+LIX .aman2
+MMA
+MAC
+STA
+
+LIL 0x0
+LIH 0x8
+MBA
+LIX .b1
+MMA
+LDA
+OR
+LIX .bman
+MMA
+MAC
+STA
+LIL 0x0
+LIH 0x0
+MBA
+LIX .b2
+MMA
+LDA
+OR
+LIX .bman1
+MMA
+MAC
+STA
+LIX .b3
+MMA
+LDA
+OR
+LIX .bman2
+MMA
+MAC
+STA
+
+IXN
+LIL 0x1
+LIH 0x0
+MMA
+IXR
+LIX exceptions
+MMA
+JMP
+
+asgn1:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIX .asgn
+MMA
+LIL 0x1
+LIH 0x0
+STA
+
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIX rasgn1
+MMA
+JMP
+
+bsgn1:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIX .bsgn
+MMA
+LIL 0x1
+LIH 0x0
+STA
+
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIX rbsgn1
+MMA
+JMP
+
+
+exceptions:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIL 0x0
+LIH 0x0
+MBA
+LIX .aexp
+MMA
+LDA
+OR
+
+IXN
+LIL 0x1
+LIH 0x0
+MMA
+IXR
+LIX isb0
+MMA
+JNE
+
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIL 0x0
+LIH 0x8
+MBA
+LIX .aman
+MMA
+LDA
+XOR
+
+IXN
+LIL 0x1
+LIH 0x0
+MMA
+IXR
+LIX isb0
+MMA
+JNE
+
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIL 0x0
+LIH 0x0
+MBA
+LIX .aman1
+MMA
+LDA
+XOR
+
+IXN
+LIL 0x1
+LIH 0x0
+MMA
+IXR
+LIX isb0
+MMA
+JNE
+
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIX .aman2
+MMA
+LDA
+XOR
+
+IXN
+LIL 0x1
+LIH 0x0
+MMA
+IXR
+LIX isb0
+MMA
+JNE
+
+IXN
+LIL 0x1
+LIH 0x0
+MMA
+IXR
+LIX ais0
+MMA
+JMP
+
+isb0:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIL 0x0
+LIH 0x0
+MBA
+LIX .bexp
+MMA
+LDA
+XOR
+
+IXN
+LIL 0x2
+LIH 0x0
+MMA
+IXR
+LIX no0
+MMA
+JNE
+
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIL 0x0
+LIH 0x8
+MBA
+LIX .bman
+MMA
+LDA
+XOR
+
+IXN
+LIL 0x2
+LIH 0x0
+MMA
+IXR
+LIX no0
+MMA
+JNE
+
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIL 0x0
+LIH 0x0
+MBA
+LIX .bman1
+MMA
+LDA
+XOR
+
+IXN
+LIL 0x2
+LIH 0x0
+MMA
+IXR
+LIX no0
+MMA
+JNE
+
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIX .bman2
+MMA
+LDA
+XOR
+
+IXN
+LIL 0x2
+LIH 0x0
+MMA
+IXR
+LIX no0
+MMA
+JNE
+
+IXN
+LIL 0x2
+LIH 0x0
+MMA
+IXR
+LIX bis0
+MMA
+JMP
+
+
+ais0:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIL 0xF
+LIH 0xF
+MBA
+LIX .bexp
+MMA
+LDA
+XOR
+
+IXN
+LIL 0x7
+LIH 0x0
+MMA
+IXR
+LIX ret0
+MMA
+JNE
+
+IXN
+LIL 0x3
+LIH 0x0
+MMA
+IXR
+LIX retnan
+MMA
+JMP
+
+bis0:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIL 0xF
+LIH 0xF
+MBA
+LIX .aexp
+MMA
+LDA
+XOR
+
+IXN
+LIL 0x7
+LIH 0x0
+MMA
+IXR
+LIX ret0
+MMA
+JNE
+
+IXN
+LIL 0x3
+LIH 0x0
+MMA
+IXR
+LIX retnan
+MMA
+JMP
+
+no0:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIL 0xF
+LIH 0xF
+MBA
+LIX .aexp
+MMA
+LDA
+XOR
+
+IXN
+LIL 0x2
+LIH 0x0
+MMA
+IXR
+LIX isbnan
+MMA
+JNE
+
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIL 0x0
+LIH 0x8
+MBA
+LIX .aman
+MMA
+LDA
+XOR
+
+IXN
+LIL 0x3
+LIH 0x0
+MMA
+IXR
+LIX retnan
+MMA
+JNE
+
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIL 0x0
+LIH 0x0
+MBA
+LIX .aman1
+MMA
+LDA
+OR
+
+IXN
+LIL 0x3
+LIH 0x0
+MMA
+IXR
+LIX retnan
+MMA
+JNE
+
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIX .aman2
+MMA
+LDA
+OR
+
+IXN
+LIL 0x3
+LIH 0x0
+MMA
+IXR
+LIX retnan
+MMA
+JNE
+
+IXN
+LIL 0x2
+LIH 0x0
+MMA
+IXR
+LIX ainf
+MMA
+JMP
+
+ainf:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIL 0xF
+LIH 0xF
+MBA
+IXR
+LIX .bexp
+MMA
+LDA
+XOR
+
+IXN
+LIL 0x7
+LIH 0x0
+MMA
+IXR
+LIX mul_ret_inf
+MMA
+JNE
+
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIL 0x0
+LIH 0x8
+MBA
+IXR
+LIX .bman
+MMA
+LDA
+XOR
+
+IXN
+LIL 0x3
+LIH 0x0
+MMA
+IXR
+LIX retnan
+MMA
+JNE
+
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIL 0x0
+LIH 0x0
+MBA
+IXR
+LIX .bman1
+MMA
+LDA
+OR
+
+IXN
+LIL 0x3
+LIH 0x0
+MMA
+IXR
+LIX retnan
+MMA
+JNE
+
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIX .bman2
+MMA
+LDA
+OR
+
+IXN
+LIL 0x3
+LIH 0x0
+MMA
+IXR
+LIX retnan
+MMA
+JNE
+
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIX .asgn
+MMA
+LDA
+MBA
+LIX .bsgn
+MMA
+LDA
+XOR
+
+IXN
+LIL 0x7
+LIH 0x0
+MMA
+IXR
+LIX mul_ret_inf
+MMA
+JNE
+
+IXN
+LIL 0x7
+LIH 0x0
+MMA
+IXR
+LIX reta
+MMA
+JMP
+
+
+isbnan:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIL 0xF
+LIH 0xF
+MBA
+IXR
+LIX .bexp
+MMA
+LDA
+XOR
+
+IXN
+LIL 0x3
+LIH 0x0
+MMA
+IXR
+LIX add_exp
+MMA
+JNE
+
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIL 0x0
+LIH 0x8
+MBA
+LIX .bman
+MMA
+LDA
+XOR
+
+IXN
+LIL 0x3
+LIH 0x0
+MMA
+IXR
+LIX retnan
+MMA
+JNE
+
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIL 0x0
+LIH 0x0
+MBA
+LIX .bman1
+MMA
+LDA
+OR
+
+IXN
+LIL 0x3
+LIH 0x0
+MMA
+IXR
+LIX retnan
+MMA
+JNE
+
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIX .bman2
+MMA
+LDA
+OR
+
+IXN
+LIL 0x3
+LIH 0x0
+MMA
+IXR
+LIX retnan
+MMA
+JNE
+
+IXN
+LIL 0x7
+LIH 0x0
+MMA
+IXR
+LIX mul_ret_inf
+MMA
+JMP
+
+retnan:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIX .c
+MMA
+LIL 0xF
+LIH 0x7
+STA
+LIX .c1
+MMA
+LIL 0xF
+LIH 0xF
+STA
+LIX .c2
+MMA
+LIL 0xF
+LIH 0xF
+STA
+LIX .c3
+MMA
+LIL 0xF
+LIH 0xF
+STA
+
+IXN
+LIL 0x9
+LIH 0x0
+MMA
+IXR
+LIX mul_end
+MMA
+JMP
+
+add_exp:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIX .aexp
+MMA
+LDA
+MBA
+LIX .bexp
+MMA
+LDA
+ADL
+ADH
+
+LIX .cexp
+MMA
+MAC
+STA
+MBA
+LIL 0x0
+LIH 0x8
+AND
+
+MAC
+MBA
+LIL 0x0
+LIH 0x0
+ADL
+ADH
+LIL 0x1
+LIH 0x8
+MBA
+MAC
+AND
+
+IXN
+LIL 0x3
+LIH 0x0
+MMA
+IXR
+LIX mul_exp_ok
+MMA
+JNE
+
+IXN
+LIL 0x7
+LIH 0x0
+MMA
+IXR
+LIX ret0
+MMA
+JMP
+
+mul_exp_ok:
+LIL 0x1
+LIH 0x0
+MBA
+MAC
+AND
+
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIX .mul_exp_check
+MMA
+MAC
+STA
+
+LIX .cexp
+MMA
+LDA
+MBA
+LIL 0xF
+LIH 0x7
+NOT
+MAC
+SEC
+ADL
+ADH
+MAC
+STA
+
+LIL 0x0
+LIH 0x0
+MBA
+LIX .mul_exp_check
+MMA
+LDA
+ADL
+ADH
+MAC
+STA
+MBA
+
+LIL 0x2
+LIH 0x0
+XOR
+
+IXN
+LIL 0x3
+LIH 0x0
+MMA
+IXR
+LIX mul_mantissas
+MMA
+JNE
+
+IXN
+LIL 0x7
+LIH 0x0
+MMA
+IXR
+LIX mul_ret_inf
+MMA
+JMP
+
+mul_mantissas:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIX .bman
+MMA
+LDA
+SHR
+MAC
+STA
+
+LIX .shift_carry
+MMA
+LIL 0x0
+LIH 0x0
+MBA
+ADL
+ADH
+MAC
+STA
+
+LIX .bman1
+MMA
+LDA
+SHR
+MAC
+STA
+LIX .shift_carry
+MMA
+LDA
+OR
+
+IXN
+LIL 0x6
+LIH 0x0
+MMA
+IXR
+LIX bman_shift_carry1
+MMA
+JNE
+
+bman_shift_carry1_ret:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIX .shift_carry
+MMA
+LIL 0x0
+LIH 0x0
+MBA
+ADL
+ADH
+MAC
+STA
+
+LIX .bman2
+MMA
+LDA
+SHR
+MAC
+STA
+LIX .shift_carry
+MMA
+LDA
+OR
+
+IXN
+LIL 0x6
+LIH 0x0
+MMA
+IXR
+LIX bman_shift_carry2
+MMA
+JNE
+
+bman_shift_carry2_ret:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIL 0x0
+LIH 0x0
+MBA
+ADL
+ADH
+
+IXN
+LIL 0x5
+LIH 0x0
+MMA
+IXR
+LIX mul_man_add
+MMA
+JNE
+
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIX .bman
+MMA
+LDA
+XOR
+
+IXN
+LIL 0x4
+LIH 0x0
+MMA
+IXR
+LIX mul_man_continue
+MMA
+JNE
+
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIX .bman1
+MMA
+LDA
+XOR
+
+IXN
+LIL 0x4
+LIH 0x0
+MMA
+IXR
+LIX mul_man_continue
+MMA
+JNE
+
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIX .bman2
+MMA
+LDA
+XOR
+
+IXN
+LIL 0x4
+LIH 0x0
+MMA
+IXR
+LIX mul_man_continue
+MMA
+JNE
+
+IXN
+LIL 0x6
+LIH 0x0
+MMA
+IXR
+LIX normalize
+MMA
+JMP
+
+mul_man_continue:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIX .aman2
+MMA
+LDA
+SHL
+MAC
+STA
+
+LIX .shift_carry
+MMA
+LIL 0x0
+LIH 0x0
+MBA
+ADL
+ADH
+MAC
+STA
+
+LIX .aman1
+MMA
+LDA
+SHL
+MAC
+STA
+LIX .shift_carry
+MMA
+LDA
+OR
+
+IXN
+LIL 0x5
+LIH 0x0
+MMA
+IXR
+LIX aman_lshift_carry1
+MMA
+JNE
+
+aman_lshift_carry1_ret:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIX .shift_carry
+MMA
+LIL 0x0
+LIH 0x0
+MBA
+ADL
+ADH
+MAC
+STA
+
+LIX .aman
+MMA
+LDA
+SHL
+MAC
+STA
+LIX .shift_carry
+MMA
+LDA
+OR
+
+IXN
+LIL 0x5
+LIH 0x0
+MMA
+IXR
+LIX aman_lshift_carry0
+MMA
+JNE
+
+aman_lshift_carry0_ret:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIX .shift_carry
+MMA
+LIL 0x0
+LIH 0x0
+MBA
+ADL
+ADH
+MAC
+STA
+
+LIX .mulaman_1
+MMA
+LDA
+SHL
+MAC
+STA
+LIX .shift_carry
+MMA
+LDA
+OR
+
+IXN
+LIL 0x5
+LIH 0x0
+MMA
+IXR
+LIX aman_lshift_carry_1
+MMA
+JNE
+
+aman_lshift_carry_1_ret:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIX .shift_carry
+MMA
+LIL 0x0
+LIH 0x0
+MBA
+ADL
+ADH
+MAC
+STA
+
+LIX .mulaman_2
+MMA
+LDA
+SHL
+MAC
+STA
+LIX .shift_carry
+MMA
+LDA
+OR
+
+IXN
+LIL 0x5
+LIH 0x0
+MMA
+IXR
+LIX aman_lshift_carry_2
+MMA
+JNE
+
+aman_lshift_carry_2_ret:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIX .shift_carry
+MMA
+LIL 0x0
+LIH 0x0
+MBA
+ADL
+ADH
+MAC
+STA
+
+LIX .mulaman_3
+MMA
+LDA
+SHL
+MAC
+STA
+LIX .shift_carry
+MMA
+LDA
+OR
+
+IXN
+LIL 0x6
+LIH 0x0
+MMA
+IXR
+LIX aman_lshift_carry_3
+MMA
+JNE
+
+aman_lshift_carry_3_ret:
+IXN
+LIL 0x3
+LIH 0x0
+MMA
+IXR
+
+LIX mul_mantissas
+MMA
+JMP
+
+mul_man_add:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIX .aman2
+MMA
+LDA
+MBA
+LIX .mulman5
+MMA
+LDA
+ADL
+ADH
+MAC
+STA
+
+LIX .aman1
+MMA
+LDA
+MBA
+LIX .mulman4
+MMA
+LDA
+ADL
+ADH
+MAC
+STA
+
+LIX .aman
+MMA
+LDA
+MBA
+LIX .mulman3
+MMA
+LDA
+ADL
+ADH
+MAC
+STA
+
+LIX .mulaman_1
+MMA
+LDA
+MBA
+LIX .mulman2
+MMA
+LDA
+ADL
+ADH
+MAC
+STA
+
+LIX .mulaman_2
+MMA
+LDA
+MBA
+LIX .mulman1
+MMA
+LDA
+ADL
+ADH
+MAC
+STA
+
+LIX .mulaman_3
+MMA
+LDA
+MBA
+LIX .mulman
+MMA
+LDA
+ADL
+ADH
+MAC
+STA
+
+IXN
+LIL 0x4
+LIH 0x0
+MMA
+IXR
+LIX mul_man_continue
+MMA
+JMP
+
+
+aman_lshift_carry1:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIX .aman1
+MMA
+LDA
+MBA
+LIL 0x1
+LIH 0x0
+OR
+MAC
+STA
+
+IXN
+LIL 0x4
+LIH 0x0
+MMA
+IXR
+LIX aman_lshift_carry1_ret
+MMA
+JMP
+
+aman_lshift_carry0:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIX .aman
+MMA
+LDA
+MBA
+LIL 0x1
+LIH 0x0
+OR
+MAC
+STA
+
+IXN
+LIL 0x4
+LIH 0x0
+MMA
+IXR
+LIX aman_lshift_carry0_ret
+MMA
+JMP
+
+aman_lshift_carry_1:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIX .mulaman_1
+MMA
+LDA
+MBA
+LIL 0x1
+LIH 0x0
+OR
+MAC
+STA
+
+IXN
+LIL 0x5
+LIH 0x0
+MMA
+IXR
+LIX aman_lshift_carry_1_ret
+MMA
+JMP
+
+aman_lshift_carry_2:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIX .mulaman_2
+MMA
+LDA
+MBA
+LIL 0x1
+LIH 0x0
+OR
+MAC
+STA
+
+IXN
+LIL 0x5
+LIH 0x0
+MMA
+IXR
+LIX aman_lshift_carry_2_ret
+MMA
+JMP
+
+aman_lshift_carry_3:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIX .mulaman_3
+MMA
+LDA
+MBA
+LIL 0x1
+LIH 0x0
+OR
+MAC
+STA
+
+IXN
+LIL 0x5
+LIH 0x0
+MMA
+IXR
+LIX aman_lshift_carry_3_ret
+MMA
+JMP
+
+
+bman_shift_carry1:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIX .bman1
+MMA
+LDA
+MBA
+LIL 0x0
+LIH 0x8
+OR
+MAC
+STA
+
+IXN
+LIL 0x4
+LIH 0x0
+MMA
+IXR
+LIX bman_shift_carry1_ret
+MMA
+JMP
+
+bman_shift_carry2:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIX .bman2
+MMA
+LDA
+MBA
+LIL 0x0
+LIH 0x8
+OR
+MAC
+STA
+
+IXN
+LIL 0x4
+LIH 0x0
+MMA
+IXR
+LIX bman_shift_carry2_ret
+MMA
+JMP
+
+normalize:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIL 0x0
+LIH 0x8
+MBA
+LIX .mulman
+MMA
+LDA
+AND
+
+IXN
+LIL 0x6
+LIH 0x0
+MMA
+IXR
+LIX mul_normalize_exp
+MMA
+JNE
+
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIX .mulman3
+MMA
+LDA
+SHL
+MAC
+STA
+
+LIL 0x0
+LIH 0x0
+MBA
+ADL
+ADH
+MAC
+MBA
+
+LIX .mulman2
+MMA
+LDA
+SHL
+MAC
+OR
+MAC
+STA
+
+LIL 0x0
+LIH 0x0
+MBA
+ADL
+ADH
+MAC
+MBA
+
+LIX .mulman1
+MMA
+LDA
+SHL
+MAC
+OR
+MAC
+STA
+
+LIL 0x0
+LIH 0x0
+MBA
+ADL
+ADH
+MAC
+MBA
+
+LIX .mulman
+MMA
+LDA
+SHL
+MAC
+OR
+MAC
+STA
+
+mul_normalize_exp_ret:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIX .bsgn
+MMA
+LDA
+MBA
+LIX .asgn
+MMA
+LDA
+XOR
+LIX .csgn
+MMA
+MAC
+STA
+
+LIL 0x0
+LIH 0x0
+MBA
+LIX .mulman
+MMA
+LDA
+OR
+LIX .cman
+MMA
+MAC
+STA
+
+LIX .mulman1
+MMA
+LDA
+OR
+LIX .cman1
+MMA
+MAC
+STA
+
+LIX .mulman2
+MMA
+LDA
+OR
+LIX .cman2
+MMA
+MAC
+STA
+
+IXN
+LIL 0x8
+LIH 0x0
+MMA
+IXR
+LIX mul_ret_c
+MMA
+JMP
+
+mul_normalize_exp:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+CLC
+LIL 0x1
+LIH 0x0
+MBA
+LIX .cexp
+MMA
+LDA
+ADL
+ADH
+
+MAC
+STA
+NOT
+
+IXN
+LIL 0x6
+LIH 0x0
+MMA
+IXR
+LIX mul_normalize_exp_ret
+MMA
+JNE
+
+IXN
+LIL 0x7
+LIH 0x0
+MMA
+IXR
+LIX mul_ret_inf
+MMA
+JMP
+
+ret0:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIX .asgn
+MMA
+LDA
+MBA
+LIX .bsgn
+MMA
+LDA
+XOR
+
+IXN
+LIL 0x7
+LIH 0x0
+MMA
+IXR
+LIX ret_nan_sgn1
+MMA
+JNE
+
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIX .c
+MMA
+LIL 0x0
+LIH 0x0
+STA
+
+ret_nan_sgn1_ret:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIX .c
+MMA
+LDA
+MBA
+LIL 0x0
+LIH 0x0
+OR
+MAC
+STA
+LIX .c1
+MMA
+LIL 0x0
+LIH 0x0
+STA
+LIX .c2
+MMA
+LIL 0x0
+LIH 0x0
+STA
+LIX .c3
+MMA
+LIL 0x0
+LIH 0x0
+STA
+
+IXN
+LIL 0x9
+LIH 0x0
+MMA
+IXR
+LIX mul_end
+MMA
+JMP
+
+ret_nan_sgn1:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIX .c
+MMA
+LIL 0x0
+LIH 0x8
+STA
+
+IXN
+LIL 0x7
+LIH 0x0
+MMA
+IXR
+LIX ret_nan_sgn1_ret
+MMA
+JMP
+
+reta:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIL 0x0
+LIH 0x0
+MBA
+CLC
+LIX .a
+MMA
+LDA
+OR
+LIX .c
+MMA
+MAC
+STA
+LIX .a1
+MMA
+LDA
+OR
+LIX .c1
+MMA
+MAC
+STA
+LIX .a2
+MMA
+LDA
+OR
+LIX .c2
+MMA
+MAC
+STA
+LIX .a3
+MMA
+LDA
+OR
+LIX .c3
+MMA
+MAC
+STA
+
+IXN
+LIL 0x9
+LIH 0x0
+MMA
+IXR
+LIX mul_end
+MMA
+JMP
+
+retb:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIL 0x0
+LIH 0x0
+MBA
+CLC
+LIX .b
+MMA
+LDA
+OR
+LIX .c
+MMA
+MAC
+STA
+LIX .b1
+MMA
+LDA
+OR
+LIX .c1
+MMA
+MAC
+STA
+LIX .b2
+MMA
+LDA
+OR
+LIX .c2
+MMA
+MAC
+STA
+LIX .b3
+MMA
+LDA
+OR
+LIX .c3
+MMA
+MAC
+STA
+
+IXN
+LIL 0x9
+LIH 0x0
+MMA
+IXR
+LIX mul_end
+MMA
+JMP
+
+mul_ret_inf:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIX .asgn
+MMA
+LDA
+MBA
+LIX .bsgn
+MMA
+LDA
+XOR
+
+IXN
+LIL 0x8
+LIH 0x0
+MMA
+IXR
+LIX ret_inf_sgn1
+MMA
+JNE
+
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+LIX .c
+MMA
+LIL 0x0
+LIH 0x0
+STA
+
+ret_inf_sgn1_ret:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIL 0xF
+LIH 0x7
+MBA
+LIX .c
+MMA
+LDA
+OR
+MAC
+STA
+LIX .c1
+MMA
+LIL 0x0
+LIH 0x8
+STA
+
+IXN
+LIL 0x9
+LIH 0x0
+MMA
+IXR
+LIX mul_end
+MMA
+JMP
+
+ret_inf_sgn1:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIX .c
+MMA
+LIL 0x0
+LIH 0x8
+STA
+
+IXN
+LIL 0x8
+LIH 0x0
+MMA
+IXR
+LIX ret_inf_sgn1_ret
+MMA
+JMP
+
+mul_ret_c:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIL 0x0
+LIH 0x0
+MBA
+CLC
+LIX .csgn
+MMA
+LDA
+OR
+
+IXN
+LIL 0x8
+LIH 0x0
+MMA
+IXR
+LIX mul_move_sgn1
+MMA
+JNE
+
+mul_move_sgn1_ret:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIL 0xF
+LIH 0xF
+MBA
+LIX .cexp
+MMA
+LDA
+XOR
+
+IXN
+LIL 0x8
+LIH 0x0
+MMA
+IXR
+LIX mul_move_not_inf
+MMA
+JNE
+
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIL 0xF
+LIH 0x7
+MBA
+LIX .c
+MMA
+LDA
+OR
+MAC
+STA
+LIX .c1
+MMA
+LIL 0x0
+LIH 0x8
+STA
+
+IXN
+LIL 0x9
+LIH 0x0
+MMA
+IXR
+LIX mul_end
+MMA
+JMP
+
+mul_move_not_inf:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIX .cexp
+MMA
+LDA
+SHR
+LIX .c
+MMA
+MAC
+MBA
+LDA
+OR
+MAC
+STA
+
+LIL 0x0
+LIH 0x0
+MBA
+ADL
+ADH
+
+IXN
+LIL 0x8
+LIH 0x0
+MMA
+IXR
+LIX mul_move_exp1
+MMA
+JNE
+
+mul_move_exp1_ret:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIL 0xF
+LIH 0x7
+MBA
+LIX .cman
+MMA
+LDA
+AND
+LIX .c1
+MMA
+MAC
+MBA
+LDA
+OR
+MAC
+STA
+
+LIL 0x0
+LIH 0x0
+MBA
+LIX .cman1
+MMA
+LDA
+OR
+LIX .c2
+MMA
+MAC
+STA
+
+LIX .cman2
+MMA
+LDA
+OR
+LIX .c3
+MMA
+MAC
+STA
+
+IXN
+LIL 0x9
+LIH 0x0
+MMA
+IXR
+LIX mul_end
+MMA
+JMP
+
+
+mul_move_sgn1:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIX .c
+MMA
+LIL 0x0
+LIH 0x8
+STA
+
+IXN
+LIL 0x8
+LIH 0x0
+MMA
+IXR
+LIX mul_move_sgn1_ret
+MMA
+JMP
+
+mul_move_exp1:
+IXN
+LIL 0x0
+LIH 0x0
+MMA
+IXR
+
+LIX .c1
+MMA
+LIL 0x0
+LIH 0x8
+STA
+LIX .c2
+MMA
+LIL 0x0
+LIH 0x0
+STA
+LIX .c3
+MMA
+LIL 0x0
+LIH 0x0
+STA
+
+IXN
+LIL 0x8
+LIH 0x0
+MMA
+IXR
+LIX mul_move_exp1_ret
+MMA
+JMP
+
+mul_end:
+HLT

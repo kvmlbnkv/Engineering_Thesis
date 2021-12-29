@@ -1,0 +1,994 @@
+\documentclass[11pt]{aghdpl}
+% \documentclass[en,11pt]{aghdpl}  % praca w języku angielskim
+
+% Lista wszystkich języków stanowiących języki pozycji bibliograficznych użytych w pracy.
+% (Zgodnie z zasadami tworzenia bibliografii każda pozycja powinna zostać utworzona zgodnie z zasadami języka, w którym dana publikacja została napisana.)
+\usepackage[english,polish]{babel}
+
+% Użyj polskiego łamania wyrazów (zamiast domyślnego angielskiego).
+\usepackage{polski}
+
+\usepackage[utf8]{inputenc}
+
+% dodatkowe pakiety
+
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{tikz}
+\usepackage[T1]{fontenc}
+%\usepackage[]{algorithm2e}
+
+% --- < bibliografia > ---
+
+\usepackage[
+style=numeric,
+sorting=none,
+%
+% Zastosuj styl wpisu bibliograficznego właściwy językowi publikacji.
+language=autobib,
+autolang=other,
+% Zapisuj datę dostępu do strony WWW w formacie RRRR-MM-DD.
+urldate=iso8601,
+% Nie dodawaj numerów stron, na których występuje cytowanie.
+backref=false,
+% Podawaj ISBN.
+isbn=true,
+% Nie podawaj URL-i, o ile nie jest to konieczne.
+url=false,
+%
+% Ustawienia związane z polskimi normami dla bibliografii.
+maxbibnames=3,
+% Jeżeli używamy BibTeXa:
+backend=bibtex
+]{biblatex}
+
+\usepackage{csquotes}
+% Ponieważ `csquotes` nie posiada polskiego stylu, można skorzystać z mocno zbliżonego stylu chorwackiego.
+\DeclareQuoteAlias{croatian}{polish}
+
+\addbibresource{bibliografia.bib}
+
+% Nie wyświetlaj wybranych pól.
+%\AtEveryBibitem{\clearfield{note}}
+
+
+% ------------------------
+% --- < listingi > ---
+
+% Użyj czcionki kroju Courier.
+\usepackage{courier}
+
+\lstloadlanguages{TeX}
+
+\lstset{
+	literate={ą}{{\k{a}}}1
+           {ć}{{\'c}}1
+           {ę}{{\k{e}}}1
+           {ó}{{\'o}}1
+           {ń}{{\'n}}1
+           {ł}{{\l{}}}1
+           {ś}{{\'s}}1
+           {ź}{{\'z}}1
+           {ż}{{\.z}}1
+           {Ą}{{\k{A}}}1
+           {Ć}{{\'C}}1
+           {Ę}{{\k{E}}}1
+           {Ó}{{\'O}}1
+           {Ń}{{\'N}}1
+           {Ł}{{\L{}}}1
+           {Ś}{{\'S}}1
+           {Ź}{{\'Z}}1
+           {Ż}{{\.Z}}1,
+	basicstyle=\footnotesize\ttfamily,
+}
+
+% ------------------------
+
+\AtBeginDocument{
+	\renewcommand{\tablename}{Tabela}
+	\renewcommand{\figurename}{Rys.}
+}
+
+% ------------------------
+% --- < tabele > ---
+
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{makecell}
+\usepackage[flushleft]{threeparttable}
+
+% defines the X column to use m (\parbox[c]) instead of p (`parbox[t]`)
+\newcolumntype{C}[1]{>{\hsize=#1\hsize\centering\arraybackslash}X}
+
+
+%---------------------------------------------------------------------------
+
+\author{Kamil Bienek}
+\shortauthor{K. Bienek}
+
+%\titlePL{Przygotowanie bardzo długiej i pasjonującej pracy dyplomowej w~systemie~\LaTeX}
+%\titleEN{Preparation of a very long and fascinating bachelor or master thesis in \LaTeX}
+
+\titlePL{Rozszerzenie kompilatora języka C/C++ do obsługi 8-bitowego procesora RISC}
+\titleEN{C/C++ compiler extension for 8-bit RISC processors}
+
+
+\shorttitlePL{Rozszerzenie kompilatora języka C/C++ do obsługi 8-bitowego procesora RISC} % skrócona wersja tytułu jeśli jest bardzo długi
+\shorttitleEN{C/C++ compiler extension for 8-bit RISC processors}
+
+\thesistype{Praca dyplomowa inżynierska}
+%\thesistype{Master of Science Thesis}
+
+\supervisor{dr. inż. Jakub Grela}
+%\supervisor{Marcin Szpyrka PhD, DSc}
+
+\degreeprogramme{Informatyka}
+%\degreeprogramme{Computer Science}
+
+\date{2021}
+
+\department{Katedra Informatyki Stosowanej}
+%\department{Department of Applied Computer Science}
+
+\faculty{Wydział Elektrotechniki, Automatyki,\protect\\[-1mm] Informatyki i Inżynierii Biomedycznej}
+%\faculty{Faculty of Electrical Engineering, Automatics, Computer Science and Biomedical Engineering}
+
+\acknowledgements{Serdecznie dziękuję \dots tu ciąg dalszych podziękowań np. dla promotora, żony, sąsiada itp.}
+
+
+\setlength{\cftsecnumwidth}{10mm}
+
+%---------------------------------------------------------------------------
+\setcounter{secnumdepth}{4}
+\brokenpenalty=10000\relax
+
+
+\lstdefinestyle{customasm}{
+    belowcaptionskip=1\baselineskip,
+    frame=single, 
+    frameround=tttt,
+    xleftmargin=\parindent,
+    language=[x86masm]Assembler,
+    basicstyle=\footnotesize\ttfamily,
+    commentstyle=\itshape\color{green!60!black},
+    keywordstyle=\color{blue!80!black},
+    identifierstyle=\color{red!80!black},
+    tabsize=4,
+    numbers=left,
+    numbersep=8pt,
+    stepnumber=1,
+    numberstyle=\tiny\color{black}, 
+    columns = fullflexible,
+}
+
+\begin{document}
+
+\titlepages
+
+% Ponowne zdefiniowanie stylu `plain`, aby usunąć numer strony z pierwszej strony spisu treści i poszczególnych rozdziałów.
+\fancypagestyle{plain}
+{
+	% Usuń nagłówek i stopkę
+	\fancyhf{}
+	% Usuń linie.
+	\renewcommand{\headrulewidth}{0pt}
+	\renewcommand{\footrulewidth}{0pt}
+}
+
+\setcounter{tocdepth}{2}
+\tableofcontents
+\clearpage
+
+%\include{rozdzial3}
+%\include{rozdzial1}
+%\include{rozdzial2}
+%\include{tests}
+
+\chapter{Wstęp}
+\section{Cele pracy}
+\subsection{Rozszerzenie kompilatora}
+\subsection{Wizualizacja}
+\section{Zawartość pracy}
+
+\chapter{Analiza literatury?}
+
+\chapter{Procesor}
+\section{Architektura RISC}
+\section{Rejestry}
+\section{Instrukcje}
+\section{Format instrukcji}
+
+\chapter{Kompilator}
+\section{Struktura}
+\section{AVR}
+\subsection{AVR-gcc}
+\subsection{instrukcje?}
+\section{MOS 6502}
+\subsection{Instrukcje}
+
+\chapter{Konwerter}
+\section{Struktura}
+\section{Działanie}
+
+\chapter{Implementacja operacji arytmetycznych}
+\section{Operacje na liczbach całkowitych}
+\subsection{Dodawanie dwóch liczb ośmiobitowych}
+\iffalse
+\begin{algorithm}
+\caption{An algorithm with caption}\label{alg:cap}
+\begin{algorithmic}
+\Require $a \geq 0, b \geq 0$
+\Ensure $c = a + b$
+\State LIL [B]
+\State LIH [B]
+\State MMA
+\State LDA
+\State MBA
+\State LIL [A]
+\State LIH [A]
+\State MMA
+\State LDA
+\State CLC
+\State ADL
+\State ADH
+\State LIL [C]
+\State LIH [C]
+\State MMA
+\State MAC
+\State STA
+
+\end{algorithmic}
+\end{algorithm}
+\fi
+\subsection{Odejmowanie dwóch liczb ośmiobitowych}
+\iffalse
+\begin{algorithm}
+\caption{An algorithm with caption}\label{alg:cap}
+\begin{algorithmic}
+\Require $a \geq 0, b \geq 0$
+\Ensure $c = a - b$
+\State LIL [B]
+\State LIH [B]
+\State MMA
+\State LDA
+\State NOT
+\State MAC
+\State MBA
+\State LIL [A]
+\State LIH [A]
+\State MMA
+\State LDA
+\State SEC
+\State ADL
+\State ADH
+\State LIL [C]
+\State LIH [C]
+\State MMA
+\State MAC
+\State STA
+
+\end{algorithmic}
+\end{algorithm}
+\fi
+\subsection{Mnożenie dwóch liczb ośmiobitowych}
+\iffalse
+\begin{algorithm}
+\caption{An algorithm with caption}\label{alg:cap}
+\begin{algorithmic}
+\Require $a \geq 0, b \geq 0$
+\Ensure $c = a * b$
+
+\State LIL [B]
+\State LIH [B]
+\State MMA
+\State LDA
+\State SHR
+\State LIL 0x0
+\State LIH 0x0
+\State MBA
+\State ADL
+\State ADH
+\State LIX mul
+\State MMA
+\State JNE
+\State LIL ?
+\State LIH ?
+\State MMA
+\State LDA
+\State CLC
+\State ADL
+\State ADH
+\State MAC
+\State STA
+\State 
+\State 
+\State 
+\State 
+\State 
+
+\State ...
+\State mul:
+\State LIL ?
+\State LIH ?
+\State MMA
+\State LDA
+\State 
+\State 
+\State 
+\State 
+\State 
+\State 
+\State 
+\State 
+
+\end{algorithmic}
+\end{algorithm}
+\fi
+\section{Liczby zmiennopozycyjne w standardzie IEEE-754}
+
+\section{Dodawanie liczb zmiennopozycyjnych}
+\subsection{Pseudokod}
+\begin{algorithm}
+
+\caption{IEEE-754 addition}
+\iffalse
+\KwData{ a - normalized float , b - normalized float}
+\KwResult {c = a + b}
+\fi
+\begin{algorithmic}[1]
+\Require a - normalized float \\
+		 b - normalized float
+\Ensure c = a + b
+\State $NOP$
+\State $NOP$
+\State $NOP$
+\State $NOP$
+\State $NOP$
+\State $NOP$
+\State $NOP$
+\State $NOP$
+\State $NOP$
+\State $NOP$
+\State $NOP$
+\algstore{myalg}
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\begin{algorithmic}[1]
+\algrestore{myalg}
+\State $NOP$
+\State $NOP$
+\State $NOP$
+\State $NOP$
+\State $NOP$
+\State $NOP$
+\State $NOP$
+\State $NOP$
+\State $NOP$
+\State $NOP$
+\State $NOP$
+
+
+\iffalse
+\If {a = 0}{
+	c ← b
+}
+
+\If {b = 0}{
+	c ← a
+}
+
+
+asgn $\leftarrow$ a[31]
+
+aexp ← a[30..23]
+
+aman ← a[22..0]
+
+bsgn ← b[31]
+
+bexp ← b[30..23]
+
+bman ← b[22..0]
+
+\If {aexp = 255}{
+	\If {a = NaN}{
+		c ← NaN
+	}
+	\If {a = Inf}{
+		\If {bexp = 255}{
+			\If {b = NaN}{
+				c ← NaN
+			}
+			\If {b = Inf}{
+				\eIf {asgn = bsgn}{
+					c ← a
+				}{
+					c ← NaN
+				}
+			}
+		}
+	}
+}
+\fi
+\end{algorithmic}
+\end{algorithm}
+
+\cleardoublepage
+\subsection{UML}
+
+\includegraphics[scale=0.55]{addition_uml}
+
+\begin{lstlisting}[style=customasm, caption={Dodawanie liczb zmiennopozycyjnych}, label=float_addition]
+addf: LIX compare_exp
+        MMA
+        JMP
+cmp:       LIL [B]+1
+        LIH [B]+1
+MMA
+LDA
+SHL
+LIL 0x0
+LIH 0x0
+MBA
+ADL
+ADH
+MAC
+MBA
+LIL [B]
+LIH [B]
+MMA
+LDA
+SHL
+MAC
+CLC
+OR
+LIL [expB]
+LIH [expB]
+MMA
+MAC
+STA
+
+LIL [A]+1
+LIH [A]+1
+MMA
+LDA
+SHL
+LIL 0x0
+LIH 0x0
+MBA
+ADL
+ADH
+MAC
+MBA
+LIL [A]
+LIH [A]
+MMA
+LDA
+SHL
+MAC
+CLC
+OR
+LIL [expA]
+LIH [expA]
+MMA
+MAC
+STA
+
+LIL [expB]
+LIH [expB]
+MMA
+LDA
+MBA
+MAC
+
+XOR
+LIX not_equal
+MMA
+JNE
+LIX equal
+MMA
+JMP
+
+not_equal:
+LIL ST
+LIH ST
+MMA
+MAC
+STA
+LIL ST-1
+LIH ST-1
+MMA
+LIL 0x0
+LIH 0x0
+OR
+MAC
+STA
+
+loop:
+LIL ST
+LIH ST
+MMA
+LDA
+CLC
+SHL
+MAC
+STA
+LIL 0x0
+LIH 0x0
+MBA
+ADL
+ADH
+LIX check
+MMA
+JNE
+LIL ST-1
+LIH ST-1
+MMA
+LDA
+SHL
+MAC
+STA
+LIX loop
+MMA
+JMP
+HLT
+
+check:
+LIL ST-1
+LIH ST-1
+MMA
+LDA
+SHL
+LIL 0x0
+LIH 0x0
+MBA
+ADL
+ADH
+LIX higherB
+MMA
+JNE
+LIX lowerB
+MMA
+JMP
+
+higherB:
+LIL [expA]
+LIH [expA]
+MMA
+LDA
+NOT
+MAC
+MBA
+LIL [expB]
+LIH [expB]
+MMA
+LDA
+SEC
+ADL
+ADH
+LIL [exp]
+LIH [exp]
+MMA
+MAC
+STA
+// przenoszenie
+LIL [A]+1
+LIH [A]+1
+MMA
+LDA
+MBA
+LIL 0xF
+LIH 0x7
+AND
+LIL [manA]
+LIH [manA]
+MMA
+MAC
+STA
+LIL 0x0
+LIH 0x0
+MBA
+LIL [A]+2
+LIH [A]+2
+MMA
+LDA
+OR
+LIL [manA]+1
+LIH [manA]+1
+MMA
+MAC
+STA
+LIL [A]+3
+LIH [A]+3
+MMA
+LDA
+OR
+LIL [manA]+2
+LIH [manA]+2
+MMA
+MAC
+STA
+
+higherBloop:
+LIL [manA]
+LIH [manA]
+MMA
+LDA
+SHR
+MAC
+STA
+LIL [manA]+1
+LIH [manA]+1
+MMA
+LDA
+SHR
+MAC
+STA
+LIL [manA]+2
+LIH [manA]+2
+MMA
+LDA
+SHR
+MAC
+STA
+
+LIL [exp]
+LIH [exp]
+MMA
+LDA
+MBA
+LIL 0x1
+LIH 0x0
+NOT
+MAC
+SEC
+ADL
+ADH
+MAC
+STA
+LIX higherBloop
+MMA
+JNE
+LIX equals
+MMA
+JMP
+
+lowerB:
+LIL [expB]
+LIH [expB]
+MMA
+LDA
+NOT
+MAC
+MBA
+LIL [expA]
+LIH [expA]
+MMA
+LDA
+SEC
+ADL
+ADH
+LIL [exp]
+LIH [exp]
+MMA
+MAC
+STA
+// przenoszenie
+LIL [B]+1
+LIH [B]+1
+MMA
+LDA
+MBA
+LIL 0xF
+LIH 0x7
+AND
+LIL [manB]
+LIH [manB]
+MMA
+MAC
+STA
+LIL 0x0
+LIH 0x0
+MBA
+LIL [B]+2
+LIH [B]+2
+MMA
+LDA
+OR
+LIL [manB]+1
+LIH [manB]+1
+MMA
+MAC
+STA
+LIL [B]+3
+LIH [B]+3
+MMA
+LDA
+OR
+LIL [manB]+2
+LIH [manB]+2
+MMA
+MAC
+STA
+
+lowerBloop:
+LIL [manB]
+LIH [manB]
+MMA
+LDA
+SHR
+MAC
+STA
+LIL [manB]+1
+LIH [manB]+1
+MMA
+LDA
+SHR
+MAC
+STA
+LIL [manB]+2
+LIH [manB]+2
+MMA
+LDA
+SHR
+MAC
+STA
+
+LIL [exp]
+LIH [exp]
+MMA
+LDA
+MBA
+LIL 0x1
+LIH 0x0
+NOT
+MAC
+SEC
+ADL
+ADH
+MAC
+STA
+LIX lowerBloop
+MMA
+JNE
+LIX equals
+MMA
+JMP
+
+equal:
+//---dodawanie mantys
+LIL [B] + 3
+LIL [B] + 3
+MMA
+LDA
+MBA
+LIL [A] + 3
+LIH [A] + 3
+MMA
+LDA
+CLC
+ADL
+ADH
+LIL [C] + 3
+LIH [C] + 3
+MMA
+MAC
+STA
+
+LIL [B] + 2
+LIL [B] + 2
+MMA
+LDA
+MBA
+LIL [A] + 2
+LIH [A] + 2
+MMA
+LDA
+ADL
+ADH
+LIL [C] + 2
+LIH [C] + 2
+MMA
+MAC
+STA
+
+LIL [B] + 1
+LIL [B] + 1
+MMA
+LDA
+MBA
+LIL 0xF
+LIH 0x7
+AND
+LIL [C] + 1
+LIH [C] + 1
+MMA
+MAC
+STA
+LIL [A] + 1
+LIH [A] + 1
+MMA
+LDA
+MBA
+LIL 0xF
+LIH 0x7
+AND
+LIL [C] + 1
+LIH [C] + 1
+MMA
+LDA
+MBA
+MAC
+ADL
+ADH
+LIL 0xF
+LIH 0x7
+MBA
+CLC
+MAC
+AND
+MAC
+STA
+//---koniec dodawanie mantys
+
+LIL [A] + 1
+LIH [A] + 1
+MMA
+LDA
+MBA
+LIL 0x0
+LIH 0x8
+AND
+LIL [C] + 1
+LIH [C] + 1
+MMA
+LDA
+MBA
+MAC
+OR
+MAC
+STA
+
+LIL [A]
+LIH [A]
+MMA
+LDA
+MBA
+LIL [C]
+LIH [C]
+MMA
+LIL 0x0
+LIH 0x0
+OR
+MAC
+STA
+
+HLT
+
+
+equalall:
+//---dodawanie mantys
+LIL [manB] + 2
+LIL [manB] + 2
+MMA
+LDA
+MBA
+LIL [manA] + 2
+LIH [manA] + 2
+MMA
+LDA
+CLC
+ADL
+ADH
+LIL [C] + 3
+LIH [C] + 3
+MMA
+MAC
+STA
+
+LIL [manB] + 1
+LIL [manB] + 1
+MMA
+LDA
+MBA
+LIL [manA] + 1
+LIH [manA] + 1
+MMA
+LDA
+ADL
+ADH
+LIL [C] + 2
+LIH [C] + 2
+MMA
+MAC
+STA
+
+LIL [manB]
+LIL [manB]
+MMA
+LDA
+MBA
+LIL [manA]
+LIH [manA]
+MMA
+LDA
+ADL
+ADH
+LIL [C] + 1
+LIH [C] + 1
+MMA
+MAC
+STA
+//---koniec dodawanie mantys
+
+LIL [B] + 1
+LIH [B] + 1
+MMA
+LDA
+MBA
+LIL 0x0
+LIH 0x8
+AND
+LIL [C] + 1
+LIH [C] + 1
+MMA
+LDA
+MBA
+MAC
+OR
+MAC
+STA
+
+LIL [B]
+LIH [B]
+MMA
+LDA
+MBA
+LIL [C]
+LIH [C]
+MMA
+LIL 0x0
+LIH 0x0
+OR
+MAC
+STA
+
+HLT
+\end{lstlisting}
+
+
+
+
+
+\chapter{Wizualizacja}
+\section{Symulator}
+
+\chapter{Przykłady}
+\section{Przykład A}
+\section{Przykład B}
+\section{Przykład C}
+
+
+\chapter{Podsumowanie}
+
+% itd.
+% \appendix
+% \include{dodatekA}
+% \include{dodatekB}
+% itd.
+
+
+
+\printbibliography
+
+\end{document}

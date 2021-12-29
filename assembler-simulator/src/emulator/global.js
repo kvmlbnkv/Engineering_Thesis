@@ -1,15 +1,13 @@
-app.service('memory', [function () {
-    var memory = {
-        blocks: 10,
-        data: Array(2560),
+app.service('global', [function () {
+    var global = {
+        data: Array(256),
         lastAccess: -1,
         load: function (address) {
             var self = this;
+
             if (address < 0 || address >= self.data.length) {
                 throw "Memory access violation at " + address;
             }
-
-            
 
             self.lastAccess = address;
             return self.data[address];
@@ -26,6 +24,7 @@ app.service('memory', [function () {
         },
         reset: function () {
             var self = this;
+
             self.lastAccess = -1;
             for (var i = 0, l = self.data.length; i < l; i++) {
                 self.data[i] = 0;
@@ -33,6 +32,6 @@ app.service('memory', [function () {
         }
     };
 
-    memory.reset();
-    return memory;
+    global.reset();
+    return global;
 }]);

@@ -21,6 +21,8 @@ var app = angular.module('ASMSimulator', []);
             var mapping = {};
             // Hash map of label used to replace the labels after the assembler generated the code
             var labels = {};
+            //Hash map of ix of labels
+            var labels_ix = {};
             // Hash of uppercase labels used to detect duplicates
             var normalizedLabels = {};
 
@@ -56,8 +58,10 @@ var app = angular.module('ASMSimulator', []);
                     return 2;
                 } else if (input === 'M') {
                     return 3;
-                } else if (input === 'SP') {
+                } else if (input === 'IX') {
                     return 4;
+                } else if (input === 'SP') {
+                    return 5;
                 } else {
                     return undefined;
                 }
@@ -76,8 +80,10 @@ var app = angular.module('ASMSimulator', []);
                     base = 2;
                 } else if (input[0] === 'M') {
                     base = 3;
-                } else if (input.slice(0, 2) === "SP") {
+                } else if (input[0] === 'IX') {
                     base = 4;
+                } else if (input.slice(0, 2) === "SP") {
+                    base = 5;
                 } else {
                     return undefined;
                 }
@@ -173,10 +179,11 @@ var app = angular.module('ASMSimulator', []);
                 if (upperLabel in normalizedLabels)
                     throw "Duplicate label: " + label;
 
-                if (upperLabel === "A" || upperLabel === "B" || upperLabel === "C" || upperLabel === "M")
+                if (upperLabel === "A" || upperLabel === "B" || upperLabel === "C" || upperLabel === "M" || upperLabel === "IX")
                     throw "Label contains keyword: " + upperLabel;
 
-                labels[label] = code.length;
+                labels[label] = code.length % 256;
+                labels_ix[label] = Math.floor(code.length / 256);
             };
 
             var checkNoExtraArg = function (instr, arg) {
@@ -530,7 +537,7 @@ var app = angular.module('ASMSimulator', []);
                 }
             }
 
-            return {code: code, mapping: mapping, labels: labels};
+            return {code: code, mapping: mapping, labels: labels, labels_ix: labels_ix};
         }
     };
 }]);
@@ -752,7 +759,15 @@ var app = angular.module('ASMSimulator', []);
                         self.pc++;
                         break;
                     case opcodes.MMA:
-                        setGPR_SP(checkGPR_SP(3), getGPR_SP(0));
+                        if (self.gpr[4] === 0) {
+                            setGPR_SP(checkGPR_SP(3), getGPR_SP(3) - (getGPR_SP(3) & 0xFF) + getGPR_SP(0));
+                        }
+                        else if (self.gpr[4] === 1) {
+                            setGPR_SP(checkGPR_SP(3), getGPR_SP(3) - (getGPR_SP(3) & 0xFF00) + (getGPR_SP(0) << 8));
+                        }
+                        else {
+                            throw "Invalid usage of MMA: " + pc;
+                        }
                         self.pc++;
                         break;
                     case opcodes.MAP:
@@ -769,9 +784,11 @@ var app = angular.module('ASMSimulator', []);
                         self.pc++;
                         break;
                     case opcodes.IXR:
+                        setGPR_SP(checkGPR_SP(4), 0);
                         self.pc++;
                         break;
                     case opcodes.IXN:
+                        setGPR_SP(checkGPR_SP(4), getGPR_SP(4) + 1);
                         self.pc++;
                         break;
                     case opcodes.LIL_0:
@@ -779,63 +796,63 @@ var app = angular.module('ASMSimulator', []);
                         self.pc++;
                         break;
                     case opcodes.LIL_1:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+1));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+1);
                         self.pc++;
                         break;
                     case opcodes.LIL_2:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+2));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+2);
                         self.pc++;
                         break;
                     case opcodes.LIL_3:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+3));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+3);
                         self.pc++;
                         break;
                     case opcodes.LIL_4:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+4));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+4);
                         self.pc++;
                         break;
                     case opcodes.LIL_5:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+5));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+5);
                         self.pc++;
                         break;
                     case opcodes.LIL_6:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+6));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+6);
                         self.pc++;
                         break;
                     case opcodes.LIL_7:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+7));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+7);
                         self.pc++;
                         break;
                     case opcodes.LIL_8:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+8));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+8);
                         self.pc++;
                         break;
                     case opcodes.LIL_9:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+9));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+9);
                         self.pc++;
                         break;
                     case opcodes.LIL_A:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+10));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+10);
                         self.pc++;
                         break;
                     case opcodes.LIL_B:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+11));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+11);
                         self.pc++;
                         break;
                     case opcodes.LIL_C:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+12));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+12);
                         self.pc++;
                         break;
                     case opcodes.LIL_D:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+13));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+13);
                         self.pc++;
                         break;
                     case opcodes.LIL_E:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+14));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+14);
                         self.pc++;
                         break;
                     case opcodes.LIL_F:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0xF0)+15));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0xF0)+15);
                         self.pc++;
                         break;
                     case opcodes.LIH_0:
@@ -843,63 +860,63 @@ var app = angular.module('ASMSimulator', []);
                         self.pc++;
                         break;
                     case opcodes.LIH_1:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(1<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(1<<4));
                         self.pc++;
                         break;
                     case opcodes.LIH_2:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(2<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(2<<4));
                         self.pc++;
                         break;
                     case opcodes.LIH_3:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(3<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(3<<4));
                         self.pc++;
                         break;
                     case opcodes.LIH_4:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(4<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(4<<4));
                         self.pc++;
                         break;
                     case opcodes.LIH_5:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(5<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(5<<4));
                         self.pc++;
                         break;
                     case opcodes.LIH_6:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(6<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(6<<4));
                         self.pc++;
                         break;
                     case opcodes.LIH_7:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(7<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(7<<4));
                         self.pc++;
                         break;
                     case opcodes.LIH_8:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(8<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(8<<4));
                         self.pc++;
                         break;
                     case opcodes.LIH_9:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(9<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(9<<4));
                         self.pc++;
                         break;
                     case opcodes.LIH_A:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(10<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(10<<4));
                         self.pc++;
                         break;
                     case opcodes.LIH_B:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(11<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(11<<4));
                         self.pc++;
                         break;
                     case opcodes.LIH_C:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(12<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(12<<4));
                         self.pc++;
                         break;
                     case opcodes.LIH_D:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(13<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(13<<4));
                         self.pc++;
                         break;
                     case opcodes.LIH_E:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(14<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(14<<4));
                         self.pc++;
                         break;
                     case opcodes.LIH_F:
-                        setGPR_SP(checkGPR_SP(0), checkOperation((getGPR_SP(0) & 0x0F)+(15<<4)));
+                        setGPR_SP(checkGPR_SP(0), (getGPR_SP(0) & 0x0F)+(15<<4));
                         self.pc++;
                         break;
                     default:
@@ -917,7 +934,7 @@ var app = angular.module('ASMSimulator', []);
             self.maxSP = 231;
             self.minSP = 0;
 
-            self.gpr = [0, 0, 0, 0];
+            self.gpr = [0, 0, 0, 0, 0];
             self.sp = self.maxSP;
             self.pc = 0;
             self.zero = false;
@@ -929,8 +946,8 @@ var app = angular.module('ASMSimulator', []);
     cpu.reset();
     return cpu;
 }]);
-;app.service('memory', [function () {
-    var memory = {
+;app.service('global', [function () {
+    var global = {
         data: Array(256),
         lastAccess: -1,
         load: function (address) {
@@ -956,6 +973,43 @@ var app = angular.module('ASMSimulator', []);
         reset: function () {
             var self = this;
 
+            self.lastAccess = -1;
+            for (var i = 0, l = self.data.length; i < l; i++) {
+                self.data[i] = 0;
+            }
+        }
+    };
+
+    global.reset();
+    return global;
+}]);;app.service('memory', [function () {
+    var memory = {
+        blocks: 10,
+        data: Array(2560),
+        lastAccess: -1,
+        load: function (address) {
+            var self = this;
+            if (address < 0 || address >= self.data.length) {
+                throw "Memory access violation at " + address;
+            }
+
+            
+
+            self.lastAccess = address;
+            return self.data[address];
+        },
+        store: function (address, value) {
+            var self = this;
+
+            if (address < 0 || address >= self.data.length) {
+                throw "Memory access violation at " + address;
+            }
+
+            self.lastAccess = address;
+            self.data[address] = value;
+        },
+        reset: function () {
+            var self = this;
             self.lastAccess = -1;
             for (var i = 0, l = self.data.length; i < l; i++) {
                 self.data[i] = 0;
@@ -1031,8 +1085,14 @@ var app = angular.module('ASMSimulator', []);
 
     return opcodes;
 }]);
-;app.controller('Ctrl', ['$document', '$scope', '$timeout', 'cpu', 'memory', 'assembler', function ($document, $scope, $timeout, cpu, memory, assembler) {
+;app.filter('block', function() {
+    return function(input, block) {
+        block = +block; //parse to int
+        return input.slice(block*256, block*256+256);
+    };
+});;app.controller('Ctrl', ['$document', '$scope', '$timeout', 'cpu', 'memory', 'global', 'assembler', function ($document, $scope, $timeout, cpu, memory, global,assembler) {
     $scope.memory = memory;
+    $scope.global = global;
     $scope.cpu = cpu;
     $scope.error = '';
     $scope.isRunning = false;
@@ -1041,13 +1101,18 @@ var app = angular.module('ASMSimulator', []);
     $scope.displayA = false;
     $scope.displayB = false;
     $scope.displayC = false;
-    $scope.displayM = false;
+    $scope.displayM = true;
     $scope.speeds = [{speed: 1, desc: "1 HZ"},
                      {speed: 4, desc: "4 HZ"},
                      {speed: 8, desc: "8 HZ"},
-                     {speed: 16, desc: "16 HZ"}];
-    $scope.speed = 4;
-    $scope.outputStartIndex = 232;
+                     {speed: 16, desc: "16 HZ"},
+                     {speed: 32, desc: "32 HZ"},
+                     {speed: 64, desc: "64 HZ"},
+                     {speed: 128, desc: "128 HZ"},
+                     {speed: 256, desc: "256 HZ"}];
+    $scope.speed = 16;
+    $scope.outputStartIndex = 2536;
+    $scope.memoryBlockLength = 256;
 
     $scope.code = "GOTO start\n\nDB \"Hello World!\"\nDB 0\n\nstart:\nLIL 0x0\nLIH 0x0\nMBA\n\nLIL 0x7\nLIH 0xE\nMMA\nSTA\n\nLIL 0x6\nLIH 0xE\nMMA\nLIL 0x4\nLIH 0x0\nSTA\n\nloop:\nLIL 0x7\nLIH 0xE\nMMA\nLDA\nSEC\nADL\nADH\nMAC\nSTA\n\nLIL 0x6\nLIH 0xE\nMMA\nLDA\nMMA\nLDA\nCLC\nADL\nADH\nLIL 0x7\nLIH 0xE\nMMA\nLDA\nMMA\nMAC\nSTA\n\nLIL 0x6\nLIH 0xE\nMMA\nLDA\nSEC\nADL\nADH\nMAC\nSTA\n\nMMA\nLDA\nCLC\nADL\nADH\n\nLIX loop\nMMA\nJNE\n\nHLT";
 
@@ -1128,6 +1193,7 @@ var app = angular.module('ASMSimulator', []);
             $scope.mapping = assembly.mapping;
             var binary = assembly.code;
             $scope.labels = assembly.labels;
+            $scope.labels_ix = assembly.labels_ix;
 
             if (binary.length > memory.data.length)
                 throw "Binary code does not fit into the memory. Max " + memory.data.length + " bytes are allowed";

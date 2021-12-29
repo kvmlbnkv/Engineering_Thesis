@@ -1,5 +1,6 @@
-app.controller('Ctrl', ['$document', '$scope', '$timeout', 'cpu', 'memory', 'assembler', function ($document, $scope, $timeout, cpu, memory, assembler) {
+app.controller('Ctrl', ['$document', '$scope', '$timeout', 'cpu', 'memory', 'global', 'assembler', function ($document, $scope, $timeout, cpu, memory, global,assembler) {
     $scope.memory = memory;
+    $scope.global = global;
     $scope.cpu = cpu;
     $scope.error = '';
     $scope.isRunning = false;
@@ -8,13 +9,18 @@ app.controller('Ctrl', ['$document', '$scope', '$timeout', 'cpu', 'memory', 'ass
     $scope.displayA = false;
     $scope.displayB = false;
     $scope.displayC = false;
-    $scope.displayM = false;
+    $scope.displayM = true;
     $scope.speeds = [{speed: 1, desc: "1 HZ"},
                      {speed: 4, desc: "4 HZ"},
                      {speed: 8, desc: "8 HZ"},
-                     {speed: 16, desc: "16 HZ"}];
-    $scope.speed = 4;
-    $scope.outputStartIndex = 232;
+                     {speed: 16, desc: "16 HZ"},
+                     {speed: 32, desc: "32 HZ"},
+                     {speed: 64, desc: "64 HZ"},
+                     {speed: 128, desc: "128 HZ"},
+                     {speed: 256, desc: "256 HZ"}];
+    $scope.speed = 16;
+    $scope.outputStartIndex = 2536;
+    $scope.memoryBlockLength = 256;
 
     $scope.code = "GOTO start\n\nDB \"Hello World!\"\nDB 0\n\nstart:\nLIL 0x0\nLIH 0x0\nMBA\n\nLIL 0x7\nLIH 0xE\nMMA\nSTA\n\nLIL 0x6\nLIH 0xE\nMMA\nLIL 0x4\nLIH 0x0\nSTA\n\nloop:\nLIL 0x7\nLIH 0xE\nMMA\nLDA\nSEC\nADL\nADH\nMAC\nSTA\n\nLIL 0x6\nLIH 0xE\nMMA\nLDA\nMMA\nLDA\nCLC\nADL\nADH\nLIL 0x7\nLIH 0xE\nMMA\nLDA\nMMA\nMAC\nSTA\n\nLIL 0x6\nLIH 0xE\nMMA\nLDA\nSEC\nADL\nADH\nMAC\nSTA\n\nMMA\nLDA\nCLC\nADL\nADH\n\nLIX loop\nMMA\nJNE\n\nHLT";
 
@@ -95,6 +101,7 @@ app.controller('Ctrl', ['$document', '$scope', '$timeout', 'cpu', 'memory', 'ass
             $scope.mapping = assembly.mapping;
             var binary = assembly.code;
             $scope.labels = assembly.labels;
+            $scope.labels_ix = assembly.labels_ix;
 
             if (binary.length > memory.data.length)
                 throw "Binary code does not fit into the memory. Max " + memory.data.length + " bytes are allowed";

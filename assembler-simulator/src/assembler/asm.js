@@ -20,6 +20,8 @@ app.service('assembler', ['opcodes', function (opcodes) {
             var mapping = {};
             // Hash map of label used to replace the labels after the assembler generated the code
             var labels = {};
+            //Hash map of ix of labels
+            var labels_ix = {};
             // Hash of uppercase labels used to detect duplicates
             var normalizedLabels = {};
 
@@ -55,8 +57,10 @@ app.service('assembler', ['opcodes', function (opcodes) {
                     return 2;
                 } else if (input === 'M') {
                     return 3;
-                } else if (input === 'SP') {
+                } else if (input === 'IX') {
                     return 4;
+                } else if (input === 'SP') {
+                    return 5;
                 } else {
                     return undefined;
                 }
@@ -75,8 +79,10 @@ app.service('assembler', ['opcodes', function (opcodes) {
                     base = 2;
                 } else if (input[0] === 'M') {
                     base = 3;
-                } else if (input.slice(0, 2) === "SP") {
+                } else if (input[0] === 'IX') {
                     base = 4;
+                } else if (input.slice(0, 2) === "SP") {
+                    base = 5;
                 } else {
                     return undefined;
                 }
@@ -172,10 +178,11 @@ app.service('assembler', ['opcodes', function (opcodes) {
                 if (upperLabel in normalizedLabels)
                     throw "Duplicate label: " + label;
 
-                if (upperLabel === "A" || upperLabel === "B" || upperLabel === "C" || upperLabel === "M")
+                if (upperLabel === "A" || upperLabel === "B" || upperLabel === "C" || upperLabel === "M" || upperLabel === "IX")
                     throw "Label contains keyword: " + upperLabel;
 
-                labels[label] = code.length;
+                labels[label] = code.length % 256;
+                labels_ix[label] = Math.floor(code.length / 256);
             };
 
             var checkNoExtraArg = function (instr, arg) {
@@ -529,7 +536,7 @@ app.service('assembler', ['opcodes', function (opcodes) {
                 }
             }
 
-            return {code: code, mapping: mapping, labels: labels};
+            return {code: code, mapping: mapping, labels: labels, labels_ix: labels_ix};
         }
     };
 }]);
