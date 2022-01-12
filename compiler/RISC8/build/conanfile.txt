@@ -1,0 +1,8 @@
+[requires]
+catch2/2.13.6
+cli11/1.9.1
+fmt/7.1.3
+spdlog/1.8.5
+ctre/3.3.4
+[generators]
+cmake

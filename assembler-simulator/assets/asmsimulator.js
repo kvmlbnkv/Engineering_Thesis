@@ -5,8 +5,8 @@ var app = angular.module('ASMSimulator', []);
             // Use https://www.debuggex.com/
             // Matches: "label: INSTRUCTION (["')OPERAND1(]"'), (["')OPERAND2(]"')
             // GROUPS:      1       2               3                    7
-            var regex = /^[\t ]*(?:([.A-Za-z]\w*)[:])?(?:[\t ]*([A-Za-z]{2,4})(?:[\t ]+(\[(\w+((\+|-)\d+)?)\]|\".+?\"|\'.+?\'|[.A-Za-z0-9]\w*)(?:[\t ]*[,][\t ]*(\[(\w+((\+|-)\d+)?)\]|\".+?\"|\'.+?\'|[.A-Za-z0-9]\w*))?)?)?/;
-
+            //var regex = /^[\t ]*(?:([.A-Za-z]\w*)[:])?(?:[\t ]*([A-Za-z]{2,4})(?:[\t ]+(\[(\w+((\+|-)\d+)?)\]|\".+?\"|\'.+?\'|[.A-Za-z0-9]\w*)(?:[\t ]*[,][\t ]*(\[(\w+((\+|-)\d+)?)\]|\".+?\"|\'.+?\'|[.A-Za-z0-9]\w*))?)?)?/;
+            var regex = /^[\t ]*(?:([.A-Z_a-z][A-Z_\(\)\,a-z0-9]*)[:])?(?:[\t ]*([A-Za-z]{2,4})(?:[\t ]+(\[(\w+((\+|-)\d+)?)\]|\".+?\"|\'.+?\'|[.A-Za-z0-9]\w*)(?:[\t ]*[,][\t ]*(\[(\w+((\+|-)\d+)?)\]|\".+?\"|\'.+?\'|[.A-Za-z0-9]\w*))?)?)?/;
             // Regex group indexes for operands
             var op1_group = 3;
             var op2_group = 7;
@@ -223,6 +223,16 @@ var app = angular.module('ASMSimulator', []);
                                         }
                                     else
                                         throw "DB does not support this operand";
+                                    break;
+                                case 'DBB':
+                                    for (var g = code.length; g < 254; g++) {
+                                        if (g == 51) {
+                                            code.push(80);
+                                            continue;
+                                        }
+                                        code.push(0);
+                                    }
+                                    code.push(254);
                                     break;
                                 case 'GOTO':
                                     p1 = getValue(match[op1_group]);
@@ -515,13 +525,25 @@ var app = angular.module('ASMSimulator', []);
             }
 
             // Replace label
+            var ixn = false;
             for (i = 0, l = code.length; i < l; i++) {
                 if (!angular.isNumber(code[i])) {
                     if (code[i] in labels) {
+                        if(i - 2 >= 0) {
+                            if (code[i - 2] == opcodes.IXN) {
+                                ixn = true;
+                            }
+                        }
                         if (i - 1 >= 0) {
                             if (code[i - 1] == opcodes.LIX) {
-                                code[i - 1] = opcodes.LIL_0 + (labels[code[i]] & 0x0F);
-                                code[i] = opcodes.LIH_0 + (labels[code[i]] >>> 4);
+                                if (ixn) {
+                                    code[i - 1] = opcodes.LIL_0 + (labels_ix[code[i]] & 0x0F);
+                                    code[i] = opcodes.LIH_0 + (labels_ix[code[i]] >>> 4);
+                                }
+                                else {
+                                    code[i - 1] = opcodes.LIL_0 + (labels[code[i]] & 0x0F);
+                                    code[i] = opcodes.LIH_0 + (labels[code[i]] >>> 4);
+                                }
                             }
                             else {
                                 code[i] = labels[code[i]];
@@ -534,6 +556,7 @@ var app = angular.module('ASMSimulator', []);
 
                         throw {error: "Undefined label: " + code[i]};
                     }
+                    ixn = false;
                 }
             }
 
@@ -931,7 +954,7 @@ var app = angular.module('ASMSimulator', []);
         },
         reset: function() {
             var self = this;
-            self.maxSP = 231;
+            self.maxSP = 254;
             self.minSP = 0;
 
             self.gpr = [0, 0, 0, 0, 0];
@@ -984,8 +1007,8 @@ var app = angular.module('ASMSimulator', []);
     return global;
 }]);;app.service('memory', [function () {
     var memory = {
-        blocks: 10,
-        data: Array(2560),
+        blocks: 100,
+        data: Array(25600),
         lastAccess: -1,
         load: function (address) {
             var self = this;
@@ -1111,7 +1134,7 @@ var app = angular.module('ASMSimulator', []);
                      {speed: 128, desc: "128 HZ"},
                      {speed: 256, desc: "256 HZ"}];
     $scope.speed = 16;
-    $scope.outputStartIndex = 2536;
+    $scope.outputStartIndex = 25576;
     $scope.memoryBlockLength = 256;
 
     $scope.code = "GOTO start\n\nDB \"Hello World!\"\nDB 0\n\nstart:\nLIL 0x0\nLIH 0x0\nMBA\n\nLIL 0x7\nLIH 0xE\nMMA\nSTA\n\nLIL 0x6\nLIH 0xE\nMMA\nLIL 0x4\nLIH 0x0\nSTA\n\nloop:\nLIL 0x7\nLIH 0xE\nMMA\nLDA\nSEC\nADL\nADH\nMAC\nSTA\n\nLIL 0x6\nLIH 0xE\nMMA\nLDA\nMMA\nLDA\nCLC\nADL\nADH\nLIL 0x7\nLIH 0xE\nMMA\nLDA\nMMA\nMAC\nSTA\n\nLIL 0x6\nLIH 0xE\nMMA\nLDA\nSEC\nADL\nADH\nMAC\nSTA\n\nMMA\nLDA\nCLC\nADL\nADH\n\nLIX loop\nMMA\nJNE\n\nHLT";

@@ -1,0 +1,1 @@
+/usr/bin/g++-10    -O2 -g -DNDEBUG   CMakeFiles/constexpr_tests.dir/constexpr_tests.cpp.o  -o ../bin/constexpr_tests  ../lib/libcatch_main.a /home/kb/.conan/data/fmt/7.1.3/_/_/package/287165e3abee38eb4e4f1cf0b29ed803c3fcda97/lib/libfmt.a 

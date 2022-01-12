@@ -19,7 +19,7 @@ app.controller('Ctrl', ['$document', '$scope', '$timeout', 'cpu', 'memory', 'glo
                      {speed: 128, desc: "128 HZ"},
                      {speed: 256, desc: "256 HZ"}];
     $scope.speed = 16;
-    $scope.outputStartIndex = 2536;
+    $scope.outputStartIndex = 25576;
     $scope.memoryBlockLength = 256;
 
     $scope.code = "GOTO start\n\nDB \"Hello World!\"\nDB 0\n\nstart:\nLIL 0x0\nLIH 0x0\nMBA\n\nLIL 0x7\nLIH 0xE\nMMA\nSTA\n\nLIL 0x6\nLIH 0xE\nMMA\nLIL 0x4\nLIH 0x0\nSTA\n\nloop:\nLIL 0x7\nLIH 0xE\nMMA\nLDA\nSEC\nADL\nADH\nMAC\nSTA\n\nLIL 0x6\nLIH 0xE\nMMA\nLDA\nMMA\nLDA\nCLC\nADL\nADH\nLIL 0x7\nLIH 0xE\nMMA\nLDA\nMMA\nMAC\nSTA\n\nLIL 0x6\nLIH 0xE\nMMA\nLDA\nSEC\nADL\nADH\nMAC\nSTA\n\nMMA\nLDA\nCLC\nADL\nADH\n\nLIX loop\nMMA\nJNE\n\nHLT";

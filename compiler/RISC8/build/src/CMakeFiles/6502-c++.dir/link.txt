@@ -1,0 +1,1 @@
+/usr/bin/g++-10    -O2 -g -DNDEBUG   CMakeFiles/6502-c++.dir/6502-c++.cpp.o  -o ../bin/6502-c++  /home/kb/.conan/data/spdlog/1.8.5/_/_/package/a1e45e4a56600faf7bb3ea7712b8ef729a760475/lib/libspdlog.a /home/kb/.conan/data/fmt/7.1.3/_/_/package/287165e3abee38eb4e4f1cf0b29ed803c3fcda97/lib/libfmt.a -lpthread 

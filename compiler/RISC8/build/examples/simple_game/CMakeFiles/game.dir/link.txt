@@ -1,0 +1,1 @@
+/usr/bin/g++-10    -O2 -g -DNDEBUG   CMakeFiles/game.dir/game.cpp.o  -o ../../bin/game 

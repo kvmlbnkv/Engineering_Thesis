@@ -4,8 +4,8 @@ app.service('assembler', ['opcodes', function (opcodes) {
             // Use https://www.debuggex.com/
             // Matches: "label: INSTRUCTION (["')OPERAND1(]"'), (["')OPERAND2(]"')
             // GROUPS:      1       2               3                    7
-            var regex = /^[\t ]*(?:([.A-Za-z]\w*)[:])?(?:[\t ]*([A-Za-z]{2,4})(?:[\t ]+(\[(\w+((\+|-)\d+)?)\]|\".+?\"|\'.+?\'|[.A-Za-z0-9]\w*)(?:[\t ]*[,][\t ]*(\[(\w+((\+|-)\d+)?)\]|\".+?\"|\'.+?\'|[.A-Za-z0-9]\w*))?)?)?/;
-
+            //var regex = /^[\t ]*(?:([.A-Za-z]\w*)[:])?(?:[\t ]*([A-Za-z]{2,4})(?:[\t ]+(\[(\w+((\+|-)\d+)?)\]|\".+?\"|\'.+?\'|[.A-Za-z0-9]\w*)(?:[\t ]*[,][\t ]*(\[(\w+((\+|-)\d+)?)\]|\".+?\"|\'.+?\'|[.A-Za-z0-9]\w*))?)?)?/;
+            var regex = /^[\t ]*(?:([.A-Z_a-z][A-Z_\(\)\,a-z0-9]*)[:])?(?:[\t ]*([A-Za-z]{2,4})(?:[\t ]+(\[(\w+((\+|-)\d+)?)\]|\".+?\"|\'.+?\'|[.A-Za-z0-9]\w*)(?:[\t ]*[,][\t ]*(\[(\w+((\+|-)\d+)?)\]|\".+?\"|\'.+?\'|[.A-Za-z0-9]\w*))?)?)?/;
             // Regex group indexes for operands
             var op1_group = 3;
             var op2_group = 7;
@@ -222,6 +222,16 @@ app.service('assembler', ['opcodes', function (opcodes) {
                                         }
                                     else
                                         throw "DB does not support this operand";
+                                    break;
+                                case 'DBB':
+                                    for (var g = code.length; g < 254; g++) {
+                                        if (g == 51) {
+                                            code.push(80);
+                                            continue;
+                                        }
+                                        code.push(0);
+                                    }
+                                    code.push(254);
                                     break;
                                 case 'GOTO':
                                     p1 = getValue(match[op1_group]);
@@ -514,13 +524,25 @@ app.service('assembler', ['opcodes', function (opcodes) {
             }
 
             // Replace label
+            var ixn = false;
             for (i = 0, l = code.length; i < l; i++) {
                 if (!angular.isNumber(code[i])) {
                     if (code[i] in labels) {
+                        if(i - 2 >= 0) {
+                            if (code[i - 2] == opcodes.IXN) {
+                                ixn = true;
+                            }
+                        }
                         if (i - 1 >= 0) {
                             if (code[i - 1] == opcodes.LIX) {
-                                code[i - 1] = opcodes.LIL_0 + (labels[code[i]] & 0x0F);
-                                code[i] = opcodes.LIH_0 + (labels[code[i]] >>> 4);
+                                if (ixn) {
+                                    code[i - 1] = opcodes.LIL_0 + (labels_ix[code[i]] & 0x0F);
+                                    code[i] = opcodes.LIH_0 + (labels_ix[code[i]] >>> 4);
+                                }
+                                else {
+                                    code[i - 1] = opcodes.LIL_0 + (labels[code[i]] & 0x0F);
+                                    code[i] = opcodes.LIH_0 + (labels[code[i]] >>> 4);
+                                }
                             }
                             else {
                                 code[i] = labels[code[i]];
@@ -533,6 +555,7 @@ app.service('assembler', ['opcodes', function (opcodes) {
 
                         throw {error: "Undefined label: " + code[i]};
                     }
+                    ixn = false;
                 }
             }
 

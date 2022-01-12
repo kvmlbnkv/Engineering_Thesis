@@ -1,0 +1,147 @@
+static constexpr std::string_view risc__mulqi3 =
+  R"(
+__mulqi3:
+       IXN
+       LIL 0x0
+       LIH 0x0
+       MMA
+       IXR
+       LIL 0x9
+       LIH 0x3
+       MMA
+       LDA
+       OR
+       LIX .mula
+       MMA
+       MAC
+       STA
+       LIL 0x7
+       LIH 0x3
+       MMA
+       LDA
+       OR
+       LIL 0x0
+       LIH 0x0
+       STA
+       LIX .mulb
+       MMA
+       MAC
+       STA
+
+__mulshift:
+      IXN
+      LIL 0x0
+      LIH 0x0
+      MMA
+      IXR
+      LIX .mulb
+      MMA
+      LDA
+      SHR
+      MAC
+      STA
+      LIL 0x0
+      LIH 0x0
+      MBA
+      ADL
+      ADH
+      
+      IXN
+      LIX __muladd
+      MMA
+      IXR
+      LIX __muladd
+      MMA
+      JNE
+
+      IXN
+      LIL 0x0
+      LIH 0x0
+      MMA
+      IXR
+      LIX .mulb
+      MMA
+      LDA
+      MBA
+      LIL 0x0
+      LIH 0x0
+      CLC
+      ADL
+      ADH
+
+      IXN
+      LIX __mulcontinue
+      MMA
+      IXR
+      LIX __mulcontinue
+      MMA
+      JNE
+
+      IXN
+      LIX __mulend
+      MMA
+      IXR
+      LIX __mulend
+      MMA
+      JMP
+
+__mulcontinue:
+      IXN
+      LIL 0x0
+      LIH 0x0
+      MMA
+      IXR
+      LIX .mula
+      MMA
+      LDA
+      SHL
+      MAC
+      STA
+
+      IXN
+      LIX __mulshift
+      MMA
+      IXR
+      LIX __mulshift
+      MMA
+      JMP
+
+__muladd:
+      IXN
+      LIL 0x0
+      LIH 0x0
+      MMA
+      IXR
+      LIX .mula
+      MMA
+      LDA
+      MBA
+      LIL 0x7
+      LIH 0x3
+      MMA
+      LDA
+      CLC
+      ADL
+      ADH
+      MAC
+      STA
+
+      LIX .mula
+      MMA
+      LDA
+      SHL
+      MAC
+      STA
+
+      IXN
+      LIX __mulshift
+      MMA
+      IXR
+      LIX __mulshift
+      MMA
+      JMP
+
+__mulend:
+
+
+)";
